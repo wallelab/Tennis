@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
-    <height>541</height>
+    <width>1476</width>
+    <height>960</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="pbstart">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>20</y>
+      <x>1340</x>
+      <y>30</y>
       <width>101</width>
       <height>41</height>
      </rect>
@@ -43,8 +43,8 @@
    <widget class="QLabel" name="status">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>80</y>
+      <x>1330</x>
+      <y>90</y>
       <width>120</width>
       <height>81</height>
      </rect>
@@ -56,8 +56,8 @@
    <widget class="QLabel" name="cap0">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>170</y>
+      <x>1330</x>
+      <y>180</y>
       <width>120</width>
       <height>71</height>
      </rect>
@@ -69,8 +69,8 @@
    <widget class="QLabel" name="cap1">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>280</y>
+      <x>1330</x>
+      <y>290</y>
       <width>120</width>
       <height>71</height>
      </rect>
@@ -82,8 +82,8 @@
    <widget class="QLabel" name="cap2">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>390</y>
+      <x>1330</x>
+      <y>400</y>
       <width>120</width>
       <height>71</height>
      </rect>
@@ -98,7 +98,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>826</width>
+     <width>1476</width>
      <height>25</height>
     </rect>
    </property>

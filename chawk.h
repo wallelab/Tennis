@@ -16,6 +16,7 @@ public:
                    double x2, double y2, double dt);
 
     double Forecast(double xp);
+    void AdjParam(double x, double y, double dt);
 
 };
 

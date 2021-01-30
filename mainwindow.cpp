@@ -1,16 +1,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define DEF_FACTOR  (2.0f)
+#define DEF_ROWS    960
+#define DEF_COLS    1280
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     timerID(0),
-    img_blank(cv::Mat(480,640,CV_8UC3,cv::Scalar(255,255,255))),
-    img_object(cv::Mat(480,640,CV_8UC3,cv::Scalar(0,0,0))),
+    img_blank(cv::Mat(DEF_ROWS,DEF_COLS,CV_8UC3,cv::Scalar(255,255,255))),
+    img_object(cv::Mat(DEF_ROWS,DEF_COLS,CV_8UC3,cv::Scalar(0,0,0))),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    img_blank.row(240).setTo(cv::Scalar(192, 192, 192));
+    img_blank.row(DEF_ROWS/DEF_FACTOR).setTo(cv::Scalar(192, 192, 192));
     timerID = startTimer(40);
     ShowImage();
 }
@@ -44,16 +48,28 @@ void MainWindow::timerEvent(QTimerEvent *event)
                 }
                 printf("......\n");
                 printf("@%f\t(%f,%f)\n", m_ops[m_deep].tp, m_ops[m_deep].xp, m_ops[m_deep].yp);
-                printf("-----------------------------\n");
+                printf("----------------------------------------------\n");
 
                 CVPOSITION c0, c1, c2;
                 c0 = GetCircles(m_ops[CONST_GAP].img);
                 c1 = GetCircles(m_ops[CONST_GAP*2].img);
                 c2 = GetCircles(m_ops[CONST_GAP*3].img);
-                printf("-----------------------------\n");
+                printf("----------------------------------------------\n");
 
 #if 1
+                CVPOSITION cadj;
                 m_hawk.SpeedCalc(c0.rx, c0.ry, c1.rx, c1.ry, c2.rx, c2.ry, 0.01*CONST_GAP);
+                printf("Forecast\tYp = %f\n\n", m_hawk.Forecast(6.4));
+
+                cadj = GetCircles(m_ops[CONST_GAP*3].img);
+                m_hawk.AdjParam(cadj.rx, cadj.ry, 0.01*CONST_GAP);
+                printf("Forecast\tYp = %f\n\n", m_hawk.Forecast(6.4));
+                cadj = GetCircles(m_ops[CONST_GAP*4].img);
+                m_hawk.AdjParam(cadj.rx, cadj.ry, 0.02*CONST_GAP);
+                printf("Forecast\tYp = %f\n\n", m_hawk.Forecast(6.4));
+                cadj = GetCircles(m_ops[CONST_GAP*5].img);
+                m_hawk.AdjParam(cadj.rx, cadj.ry, 0.03*CONST_GAP);
+                printf("Forecast\tYp = %f\n\n", m_hawk.Forecast(6.4));
 #else
                 m_hawk.SpeedCalc(m_ops[CONST_GAP].xp, m_ops[CONST_GAP].yp,
                         m_ops[CONST_GAP*2].xp, m_ops[CONST_GAP*2].yp,
@@ -66,12 +82,13 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::ShowImage()
 {
-    int xp = m_env.rx * 100;
-    int yp = m_env.ry * 100;
+    int xp = m_env.rx * 100. * DEF_FACTOR;
+    int yp = m_env.ry * 100. * DEF_FACTOR;
 
     img_blank.copyTo(img_object);
 
-    cv::circle(img_object, cv::Point(xp, 240 + yp), 3, cv::Scalar(0, 0, 255), 3, cv::LINE_8, 0);
+    cv::circle(img_object, cv::Point(xp, yp + DEF_ROWS/DEF_FACTOR), 3*DEF_FACTOR - 1,
+               cv::Scalar(0, 0, 255), 3*DEF_FACTOR + 1, cv::LINE_8, 0);
 
     cv::Mat image;
     cv::cvtColor(img_object, image, CV_BGR2RGB);
@@ -109,13 +126,13 @@ CVPOSITION MainWindow::GetCircles(cv::Mat image)
 
     cv::cvtColor(image, img, CV_BGR2GRAY);
     cv::GaussianBlur(img, img, cv::Size(3,3), 1.5);
-    cv::HoughCircles(img, circles, CV_HOUGH_GRADIENT, 2, 50, 200, 10, 3, 6);
+    cv::HoughCircles(img, circles, CV_HOUGH_GRADIENT, 2, 50, 200, 10, 3, 10);
 
     std::vector<cv::Vec3f>::const_iterator itc = circles.begin();
 
     CVPOSITION center;
-    center.rx = 0.01 * (*itc)[0];
-    center.ry = 0.01 * ((*itc)[1] - 240);
+    center.rx = (0.01 * (*itc)[0]) / DEF_FACTOR;
+    center.ry = (0.01 * ((*itc)[1] - DEF_ROWS/DEF_FACTOR)) / DEF_FACTOR;
 
     int count = 0;
     while(itc != circles.end()) {
